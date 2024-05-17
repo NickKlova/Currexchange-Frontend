@@ -1,12 +1,12 @@
 export const routes = [
-  { path: '/', redirect: '/icons' },
+  { path: '/', redirect: '/transaction/create' },
   {
     path: '/',
     component: () => import('@/layouts/default.vue'),
     children: [
       {
-        path: 'icons',
-        component: () => import('@/pages/icons.vue'),
+        path: 'transaction/create',
+        component: () => import('@/pages/Transactions/CreateTransaction.vue')
       },
     ],
   },
