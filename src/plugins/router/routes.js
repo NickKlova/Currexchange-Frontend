@@ -6,7 +6,11 @@ export const routes = [
     children: [
       {
         path: 'transaction/create',
-        component: () => import('@/pages/Transactions/CreateTransaction.vue')
+        component: () => import('@/pages/Transactions/CreateTransaction.vue'),
+      },
+      {
+        path: 'currencies/get',
+        component: () => import('@/pages/Currencies/GetCurrencies.vue'),
       },
     ],
   },
