@@ -49,6 +49,8 @@ const pushCreatedCurrencyToList = createdCurrency => {
   let currency = {
     id: createdCurrency.id,
     code: createdCurrency.code,
+    description: createdCurrency.description,
+    symbol: createdCurrency.symbol,
   }
 
   actualCurrencies.value.push(currency)
@@ -63,19 +65,24 @@ const pushCreatedCurrencyToList = createdCurrency => {
 <template>
   <VCard>
     <!-- Header -->
-    <div class="d-flex justify-end pa-5">
-      <VBtn @click="isShownCurrencyDialog['new']=true">
-        <VIcon icon="ri-add-line" />
-        <span>Add currency</span>
-      </VBtn>
+    <VCardTitle>
+      <div class="d-flex justify-end pa-5">
+        <h1 class="mr-auto">
+          Currency panel
+        </h1>
+        <VBtn @click="isShownCurrencyDialog['new']=true">
+          <VIcon icon="ri-add-line" />
+          <span>Add currency</span>
+        </VBtn>
 
-      <VDialog v-model="isShownCurrencyDialog['new']">
-        <CurrencyModalWindow
-          @push-created-currency-to-list="pushCreatedCurrencyToList"
-          @close-add-currency-dialog="closeCurrencyDialog"
-        />
-      </VDialog>
-    </div>
+        <VDialog v-model="isShownCurrencyDialog['new']">
+          <CurrencyModalWindow
+            @push-created-currency-to-list="pushCreatedCurrencyToList"
+            @close-add-currency-dialog="closeCurrencyDialog"
+          />
+        </VDialog>
+      </div>
+    </VCardTitle>
     <!--  -->
 
     <!-- List of currencies -->
@@ -91,6 +98,11 @@ const pushCreatedCurrencyToList = createdCurrency => {
           <VCol>
             <VListItemTitle class="font-weight-bold">
               Description
+            </VListItemTitle>
+          </VCol>
+          <VCol>
+            <VListItemTitle class="font-weight-bold">
+              Symbol
             </VListItemTitle>
           </VCol>
           <VCol
@@ -118,7 +130,12 @@ const pushCreatedCurrencyToList = createdCurrency => {
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ currency.id }}
+              {{ currency.description }}
+            </VListItemTitle>
+          </VCol>
+          <VCol>
+            <VListItemTitle>
+              {{ currency.symbol }}
             </VListItemTitle>
           </VCol>
           <VCol

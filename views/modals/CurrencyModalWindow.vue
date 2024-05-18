@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import currencyService from '@/js/services/currencyService'
+import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+
+const snackbar = useSnackbar()
 
 const props = defineProps({
   currency: {
@@ -11,9 +14,15 @@ const props = defineProps({
 
 const emits = defineEmits(['closeAddCurrencyDialog', 'pushCreatedCurrencyToList', 'updateCurrencyInList'])
 
+const currencyModel = ref({
+  id: null,
+  code: null,
+  description: null,
+  symbol: null,
+})
+
+
 const isModifiedState = ref(false)
-const currencyCode = ref('')
-const currencyDescription = ref('')
 
 onMounted(() => {
   if(props.currency !== null) {
@@ -23,8 +32,7 @@ onMounted(() => {
 
 function setCurrenciesModifiedState() {
   isModifiedState.value = true
-  currencyCode.value = props.currency.code
-  currencyDescription.value = props.currency.description
+  currencyModel.value = props.currency
 }
 
 function closeDialogWindow() {
@@ -44,13 +52,35 @@ function closeDialogWindow() {
   }
 }
 
+function isVarEmpty(variable) {
+  return variable === null || variable === undefined || variable === ''
+}
+
+function isAllFieldsFill() {
+  return !(isVarEmpty(currencyModel.value.code) ||
+    isVarEmpty(currencyModel.value.description) ||
+    isVarEmpty(currencyModel.value.symbol))
+}
+
 function saveOrUpdateCurrency() {
   let data = {
-    code: currencyCode.value,
+    code: currencyModel.value.code,
+    description: currencyModel.value.description,
+    symbol: currencyModel.value.symbol,
+  }
+
+  if (!isAllFieldsFill()) {
+    let errorObj = {
+      type: 'error',
+      text: 'Fill all fields',
+    }
+    snackbar.add(errorObj)
+
+    return
   }
 
   if(isModifiedState.value) {
-    return currencyService.updateCurrency(props.currency.id, data)
+    return currencyService.updateCurrency(currencyModel.value.id, data)
       .then(modifiedCurrency => {
         updateCurrencyInList(modifiedCurrency)
       })
@@ -71,9 +101,16 @@ function pushCreatedCurrencyToList(currency) {
 </script>
 
 <template>
+  <Vue3Snackbar
+    bottom
+    right
+  ></Vue3Snackbar>
   <VCard>
     <!-- Close button in header -->
     <div class="d-flex justify-end pa-5">
+      <h1 class="mr-auto">
+        Currency editor
+      </h1>
       <VBtn @click="closeDialogWindow">
         Close
       </VBtn>
@@ -85,13 +122,21 @@ function pushCreatedCurrencyToList(currency) {
       <VRow>
         <VCol>
           <VTextField
-            v-model="currencyCode"
+            v-model="currencyModel.code"
             label="Code"
           />
         </VCol>
         <VCol>
           <VTextField
-            v-model="currencyDescription"
+            v-model="currencyModel.symbol"
+            label="Symbol"
+          />
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VTextField
+            v-model="currencyModel.description"
             label="Description"
           />
         </VCol>
