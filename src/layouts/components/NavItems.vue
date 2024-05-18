@@ -54,5 +54,13 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
         icon: 'ri-add-line',
       }"
     />
+
+    <VerticalNavLink
+      :item="{
+        title: 'View',
+        to: '/rates/get',
+        icon: 'ri-bar-chart-horizontal-fill',
+      }"
+    />
   </VerticalNavGroup>
 </template>

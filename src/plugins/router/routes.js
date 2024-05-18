@@ -20,6 +20,10 @@ export const routes = [
         path: 'rate/create',
         component: () => import('@/pages/rates/CreateRate.vue'),
       },
+      {
+        path: 'rates/get',
+        component: () => import('@/pages/rates/ViewRates.vue'),
+      },
     ],
   },
   {
