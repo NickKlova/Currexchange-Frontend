@@ -38,6 +38,9 @@ function getRateByCurrencies(baseCurrencyId, targetCurrencyId) {
     .then(response => {
       return response.data
     })
+    .catch(err => {
+      cosole.log(err)
+    })
 }
 
 function createRate(data) {

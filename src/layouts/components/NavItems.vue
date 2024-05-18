@@ -67,7 +67,7 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 
   <VerticalNavGroup
     :item="{
-      title: 'reservations',
+      title: 'Reservations',
       icon: 'ri-bookmark-fill',
     }"
   >

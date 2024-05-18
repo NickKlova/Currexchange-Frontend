@@ -6,6 +6,9 @@ function getContacts() {
     .then(response => {
       return response.data
     })
+    .catch(err=>{
+      console.log(err)
+    })
 }
 
 function updateContact(contactId, data) {

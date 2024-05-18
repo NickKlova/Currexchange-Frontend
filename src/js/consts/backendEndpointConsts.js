@@ -47,4 +47,7 @@ export const backendEndpointConstants = {
     },
     createContact: backendHost.host + 'api/contact/create',
   },
+  reservationController: {
+    createReservation: backendHost.host + 'api/reservation/create',
+  },
 }
