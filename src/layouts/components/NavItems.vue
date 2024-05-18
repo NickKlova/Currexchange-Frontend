@@ -25,25 +25,18 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       }"
     />
   </VerticalNavGroup>
-
-  <VerticalNavGroup
+  
+  <VerticalNavLink
     :item="{
-      title: 'currencies',
+      title: 'Currencies',
+      to: '/currencies/get',
       icon: 'ri-money-dollar-circle-fill',
     }"
-  >
-    <VerticalNavLink
-      :item="{
-        title: 'View',
-        to: '/currencies/get',
-        icon: 'ri-bar-chart-horizontal-fill',
-      }"
-    />
-  </VerticalNavGroup>
-
+  />
+  
   <VerticalNavGroup
     :item="{
-      title: 'rates',
+      title: 'Rates',
       icon: 'ri-swap-2-line',
     }"
   >
