@@ -6,7 +6,7 @@ import currencyService from '@/js/services/currencyService'
 import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
 import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 const snackbar = useSnackbar()
 
 const acceptedCurrency = ref(null)

@@ -19,6 +19,7 @@ export const backendEndpointConstants = {
     getRate: (baseCurrencyId, targetCurrencyId) => {
       return backendHost.host + `api/rate/get?baseCurrency=${baseCurrencyId}&targetCurrency=${targetCurrencyId}`
     },
+    createRate: backendHost.host + 'api/rate/create',
   },
   transactionController: {
     createTransaction: backendHost.host + 'api/transaction/create',

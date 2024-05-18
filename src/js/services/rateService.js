@@ -40,7 +40,12 @@ function getRateByCurrencies(baseCurrencyId, targetCurrencyId) {
     })
 }
 
+function createRate(data) {
+  return axios.post(backendEndpointConstants.rateController.createRate, data)
+}
+
 export default {
+  createRate,
   getRateByCurrencies,
   getCurrenciesForAcceptedCurrency,
   getCurrenciesForReturnedCurrency,
