@@ -71,4 +71,19 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       icon: 'ri-wallet-3-fill',
     }"
   />
+
+  <VerticalNavGroup
+    :item="{
+      title: 'reservations',
+      icon: 'ri-bookmark-fill',
+    }"
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Create',
+        to: '/reservation/create',
+        icon: 'ri-add-line',
+      }"
+    />
+  </VerticalNavGroup>
 </template>

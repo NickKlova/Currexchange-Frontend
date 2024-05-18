@@ -28,6 +28,10 @@ export const routes = [
         path: 'funds/get',
         component: () => import('@/pages/funds/ViewFunds.vue'),
       },
+      {
+        path: 'reservation/create',
+        component: () => import('@/pages/reservations/CreateReservation.vue'),
+      },
     ],
   },
   {
