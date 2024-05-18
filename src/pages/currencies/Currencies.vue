@@ -1,88 +1,62 @@
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import CurrencyModalWindow from '../../../views/modals/CurrencyModalWindow.vue'
-import { backendEndpointConstants } from '@/pages/js/consts/backendEndpointConsts'
+import currencyService from '@/js/services/currencyService'
 
-export default {
-  components: { CurrencyModalWindow },
-  setup() {
-    const actualCurrencies = ref([])
-    const isShownCurrencyDialog = ref({})
+const actualCurrencies = ref([])
+const isShownCurrencyDialog = ref({})
 
-    onMounted(() => {
-      setCurrenciesProps()
-      isShownCurrencyDialog.value["new"] = false
+onMounted(() => {
+  setActualCurrencies()
+  isShownCurrencyDialog.value["new"] = false
+})
+
+function setActualCurrencies() {
+  currencyService.getCurrencies()
+    .then(data => {
+      actualCurrencies.value = data
     })
+}
 
-    function setCurrenciesProps() {
-      axios.get(backendEndpointConstants.currencyController.getCurrencies)
-        .then(response => {
-          actualCurrencies.value = response.data
-        })
-        .catch(error => {
-          console.error('Error when receiving currency:', error)
-        })
-    }
-
-    function deleteCurrency(id) {
-      let query = backendEndpointConstants.currencyController.deleteCurrency + id
-      axios.delete(query)
-        .then(response => {
-          let currency = actualCurrencies.value.findIndex(currency => currency.id === id)
-          if (currency !== -1) {
-            actualCurrencies.value.splice(currency, 1)
-          }
-        })
-        .catch(error => {
-          console.error('Error when deleting currency:', error)
-        })
-    }
-
-    const closeCurrencyDialog = value => {
-      isShownCurrencyDialog.value[value.id] = !value.state
-    }
-
-    const updateCurrencyInList = updatedCurrency => {
-      let index = actualCurrencies.value.findIndex(currency => currency.id === updatedCurrency.id)
-      if(index !== -1) {
-        actualCurrencies.value[index].code = updatedCurrency.code
-
-        //actualCurrencies[index].description = updatedCurrency.description
-        let closeObject = {
-          id: updatedCurrency.id,
-          state: true,
-        }
-        closeCurrencyDialog(closeObject)
+function deleteCurrency(id) {
+  currencyService.deleteCurrency(id)
+    .then(deletedCurrency => {
+      let currency = actualCurrencies.value.findIndex(item => item.id === deletedCurrency.id)
+      if (currency !== -1) {
+        actualCurrencies.value.splice(currency, 1)
       }
+    })
+}
+
+const closeCurrencyDialog = value => {
+  isShownCurrencyDialog.value[value.id] = !value.state
+}
+
+const updateCurrencyInList = updatedCurrency => {
+  let index = actualCurrencies.value.findIndex(currency => currency.id === updatedCurrency.id)
+  if(index !== -1) {
+    actualCurrencies.value[index].code = updatedCurrency.code
+
+    let closeObject = {
+      id: updatedCurrency.id,
+      state: true,
     }
+    closeCurrencyDialog(closeObject)
+  }
+}
 
-    const pushCreatedCurrencyToList = createdCurrency => {
-      let currency = {
-        id: createdCurrency.id,
-        code: createdCurrency.code,
+const pushCreatedCurrencyToList = createdCurrency => {
+  let currency = {
+    id: createdCurrency.id,
+    code: createdCurrency.code,
+  }
 
-        //description: createdCurrency.description,
-      }
-
-      actualCurrencies.value.push(currency)
-
-      let closeObject = {
-        id: "new",
-        state: true,
-      }
-      closeCurrencyDialog(closeObject)
-    }
-
-    return {
-      actualCurrencies,
-      isShownCurrencyDialog,
-      closeCurrencyDialog,
-      pushCreatedCurrencyToList,
-      updateCurrencyInList,
-      deleteCurrency,
-    }
-  },
+  actualCurrencies.value.push(currency)
+  let closeObject = {
+    id: "new",
+    state: true,
+  }
+  closeCurrencyDialog(closeObject)
 }
 </script>
 

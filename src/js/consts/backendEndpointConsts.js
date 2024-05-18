@@ -6,8 +6,12 @@ export const backendEndpointConstants = {
   currencyController: {
     getCurrencies: backendHost.host + 'api/currency/getall',
     createCurrency: backendHost.host + 'api/currency/create',
-    updateCurrency: backendHost.host + 'api/currency/update?id=',
-    deleteCurrency: backendHost.host + 'api/currency/delete?id=',
+    updateCurrency: currencyId => {
+      return backendHost.host + `api/currency/update?id=${currencyId}`
+    },
+    deleteCurrency: currencyId => {
+      return backendHost.host + `api/currency/delete?id=${currencyId}`
+    },
   },
   rateController: {
     getRatesByTargetCurrency: backendHost.host + 'api/rate/getallByTargetCurrencyId?targetCurrencyId=',

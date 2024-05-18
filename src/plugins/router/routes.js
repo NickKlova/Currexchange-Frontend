@@ -1,16 +1,24 @@
 export const routes = [
-  { path: '/', redirect: '/transaction/create' },
+  { path: '/', redirect: '/base' },
   {
     path: '/',
     component: () => import('@/layouts/default.vue'),
     children: [
       {
+        path: '/base',
+        component: () => import('@/pages/main.vue'),
+      },
+      {
         path: 'transaction/create',
-        component: () => import('@/pages/Transactions/CreateTransaction.vue'),
+        component: () => import('@/pages/transactions/CreateTransaction.vue'),
       },
       {
         path: 'currencies/get',
-        component: () => import('@/pages/Currencies/GetCurrencies.vue'),
+        component: () => import('@/pages/currencies/Currencies.vue'),
+      },
+      {
+        path: 'rate/create',
+        component: () => import('@/pages/rates/CreateRate.vue'),
       },
     ],
   },

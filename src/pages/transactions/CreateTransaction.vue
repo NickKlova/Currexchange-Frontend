@@ -1,31 +1,48 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import currencyService from '@/pages/js/currencyService'
-import rateService from '@/pages/js/rateService'
-import transactionService from '@/pages/js/transactionService'
-// step general info
+import { computed, reactive, ref, watch } from 'vue'
+import rateService from '@/js/services/rateService'
+import transactionService from '@/js/services/transactionService'
+import currencyService from '@/js/services/currencyService'
+import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+const snackbar = useSnackbar()
+
 const acceptedCurrency = ref(null)
 const returnedCurrency = ref(null)
 const amount = ref(null)
-const isLoading = ref(false)
+const returnedAmount = ref(null)
+const acceptedCurrencies = ref([])
+const returnedCurrencies = ref([])
+
 const rate = ref({
   sellRate: null,
 })
 
+const isLoading = ref(false)
+const isRateLoading = ref(false)
+const isAcceptedCurrenciesLoading = ref(false)
+const isReturnedCurrenciesLoading = ref(false)
 const isAmountEnabled = ref(false)
-const returnedAmount = ref(null)
 
-const currencies = ref([])
 const items = reactive(['General info', 'Addition info', 'Preview'])
 const step = ref(1)
-const acceptedCurrencies = ref([])
-const returnedCurrencies = ref([])
+const isLastItem = computed(() => step.value === items.length)
+
+const nextOrSubmit = () => {
+  if (isLastItem.value) {
+    return createTransaction()
+  }
+  step.value++
+}
 
 watch([acceptedCurrency, returnedCurrency], () => {
   if (acceptedCurrency.value !== null && returnedCurrency.value !== null) {
     setCurrencyPairRate()
     isAmountEnabled.value = true
   }
+  rate.value.sellRate = null
   isAmountEnabled.value = false
 })
 
@@ -34,15 +51,30 @@ watch(amount, value => {
 })
 
 function setCurrencyPairRate() {
+  isRateLoading.value = true
   rateService.getRateByCurrencies(acceptedCurrency.value.id, returnedCurrency.value.id)
     .then(data => {
       rate.value = data
     })
+    .catch(error => {
+      let errObj = {
+        type: 'error',
+        text: 'It is impossible to get the rate for such a pair of currencies',
+      }
+      snackbar.add(errObj)
+    })
+    .finally(() => {
+      isRateLoading.value = false
+    })
 }
 
 function setAcceptedCurrencies() {
+  isAcceptedCurrenciesLoading.value = true
   if (returnedCurrency.value == null) {
     setCurrencies(acceptedCurrencies)
+      .finally(() => {
+        isAcceptedCurrenciesLoading.value = false
+      })
   }
   else {
     rateService.getCurrenciesForAcceptedCurrency(returnedCurrency.value.id)
@@ -51,13 +83,25 @@ function setAcceptedCurrencies() {
       })
       .catch(error => {
         acceptedCurrencies.value = null
+        let errorObj = {
+          type: 'error',
+          text: 'There are no returned currencies that we can accept for this currency',
+        }
+        snackbar.add(errorObj)
+      })
+      .finally(() => {
+        isAcceptedCurrenciesLoading.value = false
       })
   }
 }
 
 function setReturnedCurrencies() {
+  isReturnedCurrenciesLoading.value = true
   if (acceptedCurrency.value == null) {
     setCurrencies(returnedCurrencies)
+      .finally(() => {
+        isReturnedCurrenciesLoading.value = false
+      })
   }
   else {
     rateService.getCurrenciesForReturnedCurrency(acceptedCurrency.value.id)
@@ -66,30 +110,33 @@ function setReturnedCurrencies() {
       })
       .catch(error => {
         returnedCurrencies.value = null
+        let errorObj = {
+          type: 'error',
+          text: 'There are no accepted currencies that we can return for this currency',
+        }
+        snackbar.add(errorObj)
+      })
+      .finally(() => {
+        isReturnedCurrenciesLoading.value = false
       })
   }
 }
 
-function setCurrencies(refVariable) {
-  currencyService.getCurrencies()
+function setCurrencies(reactiveVariable) {
+  return currencyService.getCurrencies()
     .then(data => {
-      refVariable.value = data
+      reactiveVariable.value = data
     })
     .catch(error => {
-      console.error('Error:', error)
+      let errObj = {
+        type: 'error',
+        text: 'Can\'t get available currencies',
+      }
+      snackbar.add(errObj)
     })
 }
 
-const isLastItem = computed(() => step.value === items.length)
-
-const nextOrSubmit = () => {
-  if (isLastItem.value) {
-    submitStepper()
-  }
-  step.value++
-}
-
-function submitStepper() {
+function createTransaction() {
   isLoading.value = true
   let data = {
     rateId: rate.value.id,
@@ -98,16 +145,29 @@ function submitStepper() {
   }
   transactionService.createTransaction(data)
     .then(info => {
-      isLastItem.value = false
+      let successObj = {
+        type: 'success',
+        text: 'Transaction successfully created',
+      }
+      snackbar.add(successObj)
+      setTimeout(() => {
+        router.push('/base')
+      }, 2000)
     })
     .catch(err=>{
+      let errorObj = {
+        type: 'error',
+        text: 'Can\'t create transaction',
+      }
+      snackbar.add(errorObj)
+    })
+    .finally(() => {
       isLoading.value = false
     })
 }
 </script>
 
 <template>
-
   <VDialog
     v-model="isLoading"
     :persistent="isLoading"
@@ -118,12 +178,15 @@ function submitStepper() {
       :size="100"
       :width="10"
       indeterminate
-      class="ma-auto">
-    </VProgressCircular>
-  </VDialog>-->
-  <VDialog v-model="isLoading">
-    Error
+      class="ma-auto"
+    />
   </VDialog>
+
+  <Vue3Snackbar
+    bottom
+    right
+    :duration="4000"
+  />
 
   <VStepper
     v-model="step"
@@ -137,6 +200,7 @@ function submitStepper() {
             label="Accepted currency"
             :items="acceptedCurrencies"
             item-title="code"
+            :loading="isAcceptedCurrenciesLoading"
             return-object
             clearable
             @click="setAcceptedCurrencies"
@@ -148,6 +212,7 @@ function submitStepper() {
             label="Returned currency"
             :items="returnedCurrencies"
             item-title="code"
+            :loading="isReturnedCurrenciesLoading"
             return-object
             clearable
             @click="setReturnedCurrencies"
@@ -170,6 +235,7 @@ function submitStepper() {
             hide-details="auto"
             type="number"
             label="Rate"
+            :loading="isRateLoading"
             disabled
           />
         </VCol>
@@ -215,7 +281,7 @@ function submitStepper() {
             <VAutocomplete
               v-model="acceptedCurrency"
               label="Accepted currency"
-              :items="currencies"
+              :items="acceptedCurrencies"
               item-title="code"
               disabled
             />
@@ -224,7 +290,7 @@ function submitStepper() {
             <VAutocomplete
               v-model="returnedCurrency"
               label="Returned currency"
-              :items="currencies"
+              :items="returnedCurrencies"
               item-title="code"
               disabled
             />

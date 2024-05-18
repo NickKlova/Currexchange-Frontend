@@ -1,96 +1,72 @@
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { backendEndpointConstants } from '@/pages/js/consts/backendEndpointConsts'
+import currencyService from '@/js/services/currencyService'
 
-export default {
-  emits: ['closeAddCurrencyDialog', 'pushCreatedCurrencyToList', 'updateCurrencyInList'],
-  props: {
-    currency: {
-      type: Object,
-      default: null,
-    },
+const props = defineProps({
+  currency: {
+    type: Object,
+    default: null,
   },
-  setup(props, { emit }) {
-    const isModifiedState = ref(false)
-    const currencyCode = ref('')
-    const currencyDescription = ref('')
+})
 
-    onMounted(() => {
-      if(props.currency !== null) {
-        setCurrenciesModifiedState()
-      }
+const emits = defineEmits(['closeAddCurrencyDialog', 'pushCreatedCurrencyToList', 'updateCurrencyInList'])
+
+const isModifiedState = ref(false)
+const currencyCode = ref('')
+const currencyDescription = ref('')
+
+onMounted(() => {
+  if(props.currency !== null) {
+    setCurrenciesModifiedState()
+  }
+})
+
+function setCurrenciesModifiedState() {
+  isModifiedState.value = true
+  currencyCode.value = props.currency.code
+  currencyDescription.value = props.currency.description
+}
+
+function closeDialogWindow() {
+  if (!isModifiedState.value) {
+    let closeObject = {
+      id: "new",
+      state: true,
+    }
+    emits('closeAddCurrencyDialog', closeObject)
+  }
+  else {
+    let closeObject = {
+      id: props.currency.id,
+      state: true,
+    }
+    emits('closeAddCurrencyDialog', closeObject)
+  }
+}
+
+function saveOrUpdateCurrency() {
+  let data = {
+    code: currencyCode.value,
+  }
+
+  if(isModifiedState.value) {
+    return currencyService.updateCurrency(props.currency.id, data)
+      .then(modifiedCurrency => {
+        updateCurrencyInList(modifiedCurrency)
+      })
+  }
+  currencyService.createCurrency(data)
+    .then(response => {
+      pushCreatedCurrencyToList(response)
     })
+}
 
-    function setCurrenciesModifiedState() {
-      isModifiedState.value = true
-      currencyCode.value = props.currency.code
-      currencyDescription.value = props.currency.description
-    }
+function updateCurrencyInList(currency) {
+  emits('updateCurrencyInList', currency)
+}
 
-    function closeDialogWindow() {
-      if (!isModifiedState.value) {
-        let closeObject = {
-          id: "new",
-          state: true
-        }
-        emit('closeAddCurrencyDialog', closeObject)
-      }
-      else {
-        let closeObject = {
-          id: props.currency.id,
-          state: true
-        }
-        emit('closeAddCurrencyDialog', closeObject)
-      }
-
-    }
-
-    function saveOrUpdateCurrency() {
-      if(isModifiedState.value) {
-        let data = {
-          code: currencyCode.value,
-          //description: currencyDescription.value,
-        }
-        axios.patch(backendEndpointConstants.currencyController.updateCurrency+props.currency.id, data)
-          .then(response => {
-            let modifiedCurrency = response.data
-            updateCurrencyInList(modifiedCurrency)
-          })
-          .catch(error => {
-            console.error('Error when adding currency:', error)
-          })
-        return;
-      }
-      let data = {
-        code: currencyCode.value,
-        //description: currencyDescription.value,
-      }
-      axios.post(backendEndpointConstants.currencyController.createCurrency, data)
-        .then(response => {
-          let createdCurrency = response.data
-          pushCreatedCurrencyToList(createdCurrency)
-        })
-        .catch(error => {
-          console.error('Error when adding currency:', error)
-        })
-    }
-
-    function updateCurrencyInList(currency) {
-      emit('updateCurrencyInList', currency)
-    }
-
-    function pushCreatedCurrencyToList(currency) {
-      emit('pushCreatedCurrencyToList', currency)
-    }
-
-    return {
-      currencyCode,
-      currencyDescription,
-      saveOrUpdateCurrency,
-      closeDialogWindow,
-    }
-  },
+function pushCreatedCurrencyToList(currency) {
+  emits('pushCreatedCurrencyToList', currency)
 }
 </script>
 

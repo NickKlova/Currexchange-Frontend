@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { backendEndpointConstants } from '@/pages/js/consts/backendEndpointConsts'
+import { backendEndpointConstants } from '@/js/consts/backendEndpointConsts'
 
 function getCurrenciesForAcceptedCurrency(currencyId) {
   return axios.get(backendEndpointConstants.rateController.getRatesByTargetCurrency + currencyId)

@@ -13,7 +13,7 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
   />
   <VerticalNavGroup
     :item="{
-      title: 'Transactions',
+      title: 'transactions',
       icon: 'ri-p2p-fill',
     }"
   >
@@ -28,7 +28,7 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 
   <VerticalNavGroup
     :item="{
-      title: 'Currencies',
+      title: 'currencies',
       icon: 'ri-money-dollar-circle-fill',
     }"
   >
@@ -37,6 +37,21 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
         title: 'View',
         to: '/currencies/get',
         icon: 'ri-bar-chart-horizontal-fill',
+      }"
+    />
+  </VerticalNavGroup>
+
+  <VerticalNavGroup
+    :item="{
+      title: 'rates',
+      icon: 'ri-swap-2-line',
+    }"
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Create',
+        to: '/rate/create',
+        icon: 'ri-add-line',
       }"
     />
   </VerticalNavGroup>
