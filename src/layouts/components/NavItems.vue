@@ -79,4 +79,12 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       }"
     />
   </VerticalNavGroup>
+
+  <VerticalNavLink
+    :item="{
+      title: 'Contacts',
+      to: '/contacts/get',
+      icon: 'ri-account-box-fill',
+    }"
+  />
 </template>

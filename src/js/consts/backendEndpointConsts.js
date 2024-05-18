@@ -37,4 +37,14 @@ export const backendEndpointConstants = {
       return backendHost.host + `api/fund/updateById?id=${fundId}`
     },
   },
+  contactController: {
+    getContacts: backendHost.host + 'api/contact/getall',
+    updateContact: contactId => {
+      return backendHost.host + `api/contact/update?id=${contactId}`
+    },
+    deleteContact: contactId => {
+      return backendHost.host + `api/contact/delete?id=${contactId}`
+    },
+    createContact: backendHost.host + 'api/contact/create',
+  },
 }
