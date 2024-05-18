@@ -3,20 +3,55 @@ import { computed, ref, onMounted, watch } from 'vue'
 import currencyService from '@/js/services/currencyService'
 import rateService from '@/js/services/rateService'
 import { useRouter } from 'vue-router'
+import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+import isVarEmpty from "@/js/helper"
 
+const snackbar = useSnackbar()
 const router = useRouter()
 const items = reactive(['Rate information', 'Confirmation'])
 const step = ref(1)
 const isLastItem = computed(() => step.value === items.length)
 
-const acceptedCurrency = ref(null)
-const returnedCurrency = ref(null)
+const acceptedCurrency = ref({
+  id: null,
+  code: null,
+  description: null,
+  symbol: null,
+})
+
+const returnedCurrency = ref({
+  id: null,
+  code: null,
+  description: null,
+  symbol: null,
+})
+
 const currencies = ref([])
 const rate = ref(null)
+
+const acceptedCurrencies = computed(() => {
+  if (returnedCurrency.value !== null) {
+    return [...currencies.value].filter(curr=>curr.id !== returnedCurrency.value.id)
+  }
+
+  return [...currencies.value]
+})
+
+const returnedCurrencies = computed(() => {
+  if (acceptedCurrency.value !== null) {
+    return [...currencies.value].filter(curr=>curr.id !== acceptedCurrency.value.id)
+  }
+
+  return [...currencies.value]
+})
 
 onMounted(() => {
   setCurrencies(currencies)
 })
+
+function isAllRequiredFieldFill() {
+  return !(isVarEmpty(acceptedCurrency.value) || isVarEmpty(returnedCurrency.value) || isVarEmpty(rate.value))
+}
 
 function setCurrencies(reactiveVariable) {
   return currencyService.getCurrencies()
@@ -27,8 +62,18 @@ function setCurrencies(reactiveVariable) {
 
 const nextOrSubmit = () => {
   if (isLastItem.value) {
-    return createRate()
+    if (isAllRequiredFieldFill()) {
+      return createRate()
+    }
+    let errorObj = {
+      type: 'error',
+      text: 'Fill all fields',
+    }
+    snackbar.add(errorObj)
+
+    return
   }
+
   step.value++
 }
 
@@ -47,6 +92,11 @@ function createRate() {
 </script>
 
 <template>
+  <Vue3Snackbar
+    bottom
+    right
+    :duration="2000"
+  />
   <VStepper
     v-model="step"
     :items="items"
@@ -57,7 +107,7 @@ function createRate() {
           <VAutocomplete
             v-model="acceptedCurrency"
             label="Accepted currency"
-            :items="currencies"
+            :items="acceptedCurrencies"
             return-object
             clearable
             item-title="code"
@@ -67,7 +117,7 @@ function createRate() {
           <VAutocomplete
             v-model="returnedCurrency"
             label="Returned currency"
-            :items="currencies"
+            :items="returnedCurrencies"
             return-object
             clearable
             item-title="code"

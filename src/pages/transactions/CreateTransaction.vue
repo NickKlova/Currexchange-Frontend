@@ -185,7 +185,7 @@ function createTransaction() {
   <Vue3Snackbar
     bottom
     right
-    :duration="4000"
+    :duration="2000"
   />
 
   <VStepper
