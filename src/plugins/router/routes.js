@@ -36,6 +36,10 @@ export const routes = [
         path: 'contacts/get',
         component: () => import('@/pages/contacts/Contacts.vue'),
       },
+      {
+        path: 'reservations/get',
+        component: () => import('@/pages/reservations/ViewReservations.vue'),
+      },
     ],
   },
   {

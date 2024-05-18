@@ -49,5 +49,9 @@ export const backendEndpointConstants = {
   },
   reservationController: {
     createReservation: backendHost.host + 'api/reservation/create',
+    getReservations: backendHost.host + 'api/reservation/getall',
+    deleteReservation: reservationId => {
+      return backendHost.host + 'api/reservation/delete?id=' + reservationId
+    },
   },
 }

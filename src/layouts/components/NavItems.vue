@@ -73,6 +73,13 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
   >
     <VerticalNavLink
       :item="{
+        title: 'View',
+        to: '/reservations/get',
+        icon: 'ri-bar-chart-horizontal-fill',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
         title: 'Create',
         to: '/reservation/create',
         icon: 'ri-add-line',
