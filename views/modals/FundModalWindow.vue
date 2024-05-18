@@ -1,5 +1,7 @@
 <script setup>
 import fundService from '@/js/services/fundService'
+import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+import isVarEmpty from "@/js/helper"
 
 const props = defineProps({
   fund: {
@@ -7,6 +9,8 @@ const props = defineProps({
     default: null,
   },
 })
+
+const snackbar = useSnackbar()
 
 const emits = defineEmits(['closeModifyFundDialog', 'updateFundInList'])
 
@@ -21,12 +25,25 @@ onMounted(() => {
 function updateFund() {
   let data = {
     currencyId: currency.value.id,
-    amount: fundAmount.value
+    amount: fundAmount.value,
   }
-  fundService.updateRate(props.fund.id, data)
+
+  if (!isRequiredFieldFill()) {
+    let errorObj = {
+      type: 'error',
+      text: 'Fill all fields',
+    }
+    snackbar.add(errorObj)
+  }
+
+  fundService.updateFund(props.fund.id, data)
     .then((fund) => {
       updateFundInList(fund)
     })
+}
+
+function isRequiredFieldFill() {
+  return !isVarEmpty(fundAmount.value)
 }
 
 function updateFundInList(fund) {
@@ -43,6 +60,10 @@ function closeDialogWindow() {
 </script>
 
 <template>
+  <Vue3Snackbar
+    bottom
+    right
+  ></Vue3Snackbar>
   <VCard>
     <!-- Close button in header -->
     <div class="d-flex justify-end pa-5">

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import currencyService from '@/js/services/currencyService'
 import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+import isVarEmpty from "@/js/helper"
 
 const snackbar = useSnackbar()
 
@@ -50,10 +51,6 @@ function closeDialogWindow() {
     }
     emits('closeAddCurrencyDialog', closeObject)
   }
-}
-
-function isVarEmpty(variable) {
-  return variable === null || variable === undefined || variable === ''
 }
 
 function isAllFieldsFill() {
