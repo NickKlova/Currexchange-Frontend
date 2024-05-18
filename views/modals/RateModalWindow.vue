@@ -1,6 +1,8 @@
 <script setup>
 import currencyService from '@/js/services/currencyService'
 import rateService from '@/js/services/rateService'
+import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
+import isVarEmpty from "@/js/helper"
 
 const props = defineProps({
   rate: {
@@ -9,17 +11,36 @@ const props = defineProps({
   },
 })
 
+const snackbar = useSnackbar()
+
 const emits = defineEmits(['closeModifyRateDialog', 'updateRateInList'])
 
 const currencies = ref([])
-const acceptedCurrency = ref(null)
-const returnedCurrency = ref(null)
+
+const acceptedCurrency = ref({
+  id: null,
+  code: null,
+  description: null,
+  symbol: null,
+})
+
+const returnedCurrency = ref({
+  id: null,
+  code: null,
+  description: null,
+  symbol: null,
+})
+
 const rateNum = ref(null)
 
 onMounted(() => {
   fillRateFields()
   setCurrencies()
 })
+
+function isAllRequiredFieldsFill() {
+  return !isVarEmpty(rateNum.value)
+}
 
 function fillRateFields() {
   acceptedCurrency.value = props.rate.baseCurrency
@@ -43,6 +64,15 @@ function closeDialogWindow() {
 }
 
 function updateRate() {
+  if(!isAllRequiredFieldsFill()) {
+    let errorObj = {
+      type: 'error',
+      text: 'Fill all fields',
+    }
+    snackbar.add(errorObj)
+
+    return
+  }
   let data = {
     baseCurrencyId: acceptedCurrency.value.id,
     targetCurrencyId: returnedCurrency.value.id,
@@ -61,6 +91,11 @@ function updateRateInList(rate) {
 </script>
 
 <template>
+  <Vue3Snackbar
+    bottom
+    right
+    :duration="2000"
+  />
   <VCard>
     <!-- Close button in header -->
     <div class="d-flex justify-end pa-5">
@@ -74,23 +109,17 @@ function updateRateInList(rate) {
     <VContainer>
       <VRow>
         <VCol>
-          <VAutocomplete
-            v-model="acceptedCurrency"
+          <VTextField
+            v-model="acceptedCurrency.code"
             label="Accepted currency"
-            :items="currencies"
-            return-object
-            clearable
-            item-title="code"
+            disabled
           />
         </VCol>
         <VCol>
-          <VAutocomplete
-            v-model="returnedCurrency"
-            label="Returned currency"
-            :items="currencies"
-            return-object
-            clearable
-            item-title="code"
+          <VTextField
+            v-model="returnedCurrency.code"
+            label="Accepted currency"
+            disabled
           />
         </VCol>
       </VRow>

@@ -24,6 +24,9 @@ export const backendEndpointConstants = {
     updateRate: rateId => {
       return backendHost.host + 'api/rate/update?id=' + rateId
     },
+    deleteRate: rateId => {
+      return backendHost.host + `api/rate/delete?id=${rateId}`
+    },
   },
   transactionController: {
     createTransaction: backendHost.host + 'api/transaction/create',

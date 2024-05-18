@@ -33,10 +33,23 @@ function setRates() {
       console.log(rates.value)
     })
 }
+
+function deleteRate(id) {
+  rateService.deleteRate(id)
+    .then(deletedRate => {
+      let rateIndex = rates.value.findIndex(item => item.id === deletedRate.id)
+      if (rateIndex !== -1) {
+        rates.value.splice(rateIndex, 1)
+      }
+    })
+}
 </script>
 
 <template>
   <VCard>
+    <VCardTitle>
+      <h1 class="pa-5">Rate panel</h1>
+    </VCardTitle>
     <VList>
       <VListItem class="bg-var-theme-background">
         <VRow>
@@ -106,6 +119,16 @@ function setRates() {
                 @closeModifyRateDialog="closeRateDialog"
               />
             </VDialog>
+            <!-- -->
+
+            <!-- Delete currency button -->
+            <VBtn
+              color="secondary"
+              variant="text"
+              @click="deleteRate(rate.id)"
+            >
+              <VIcon icon="ri-delete-bin-5-line" />
+            </VBtn>
             <!-- -->
           </VCol>
         </VRow>

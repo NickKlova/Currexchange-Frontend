@@ -97,80 +97,87 @@ function createRate() {
     right
     :duration="2000"
   />
-  <VStepper
-    v-model="step"
-    :items="items"
-  >
-    <VStepperWindow v-if="step === 1">
-      <VRow>
-        <VCol class="pa-5">
-          <VAutocomplete
-            v-model="acceptedCurrency"
-            label="Accepted currency"
-            :items="acceptedCurrencies"
-            return-object
-            clearable
-            item-title="code"
-          />
-        </VCol>
-        <VCol class="pa-5">
-          <VAutocomplete
-            v-model="returnedCurrency"
-            label="Returned currency"
-            :items="returnedCurrencies"
-            return-object
-            clearable
-            item-title="code"
-          />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol class="pa-5">
-          <VTextField
-            v-model="rate"
-            label="Rate"
-          />
-        </VCol>
-      </VRow>
-    </VStepperWindow>
+  <VCard>
+    <VCardTitle>
+      <h1 class="pa-5">
+        Rate editor
+      </h1>
+    </VCardTitle>
+    <VStepper
+      v-model="step"
+      :items="items"
+    >
+      <VStepperWindow v-if="step === 1">
+        <VRow>
+          <VCol class="pa-5">
+            <VAutocomplete
+              v-model="acceptedCurrency"
+              label="Accepted currency"
+              :items="acceptedCurrencies"
+              return-object
+              clearable
+              item-title="code"
+            />
+          </VCol>
+          <VCol class="pa-5">
+            <VAutocomplete
+              v-model="returnedCurrency"
+              label="Returned currency"
+              :items="returnedCurrencies"
+              return-object
+              clearable
+              item-title="code"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol class="pa-5">
+            <VTextField
+              v-model="rate"
+              label="Rate"
+            />
+          </VCol>
+        </VRow>
+      </VStepperWindow>
 
-    <VStepperWindow v-if="step === 2">
-      <VRow>
-        <VCol class="pa-5">
-          <VTextField
-            v-model="acceptedCurrency.code"
-            label="Accepted currency"
-            disabled
-          />
-        </VCol>
-        <VCol class="pa-5">
-          <VTextField
-            v-model="returnedCurrency.code"
-            label="Returned currency"
-            disabled
-          />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol class="pa-5">
-          <VTextField
-            v-model="rate"
-            label="Rate"
-            disabled
-          />
-        </VCol>
-      </VRow>
-    </VStepperWindow>
+      <VStepperWindow v-if="step === 2">
+        <VRow>
+          <VCol class="pa-5">
+            <VTextField
+              v-model="acceptedCurrency.code"
+              label="Accepted currency"
+              disabled
+            />
+          </VCol>
+          <VCol class="pa-5">
+            <VTextField
+              v-model="returnedCurrency.code"
+              label="Returned currency"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol class="pa-5">
+            <VTextField
+              v-model="rate"
+              label="Rate"
+              disabled
+            />
+          </VCol>
+        </VRow>
+      </VStepperWindow>
 
-    <template #next>
-      <VBtn
-        :disabled="false"
-        :color="isLastItem ? 'success' : 'primary'"
-        @click="nextOrSubmit"
-      >
-        {{ isLastItem ? 'Submit' : 'Next' }}
-      </VBtn>
-    </template>
-  </VStepper>
+      <template #next>
+        <VBtn
+          :disabled="false"
+          :color="isLastItem ? 'success' : 'primary'"
+          @click="nextOrSubmit"
+        >
+          {{ isLastItem ? 'Submit' : 'Next' }}
+        </VBtn>
+      </template>
+    </VStepper>
+  </VCard>
 </template>
 
