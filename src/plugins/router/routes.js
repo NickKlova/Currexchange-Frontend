@@ -24,6 +24,10 @@ export const routes = [
         path: 'rates/get',
         component: () => import('@/pages/rates/ViewRates.vue'),
       },
+      {
+        path: 'funds/get',
+        component: () => import('@/pages/funds/ViewFunds.vue'),
+      },
     ],
   },
   {

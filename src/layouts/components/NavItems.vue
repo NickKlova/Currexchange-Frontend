@@ -63,4 +63,12 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       }"
     />
   </VerticalNavGroup>
+
+  <VerticalNavLink
+    :item="{
+      title: 'Funds',
+      to: '/funds/get',
+      icon: 'ri-wallet-3-fill',
+    }"
+  />
 </template>
