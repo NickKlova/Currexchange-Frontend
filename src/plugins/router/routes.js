@@ -23,6 +23,10 @@ export const routes = [
       {
         path: 'rates/get',
         component: () => import('@/pages/rates/ViewRates.vue'),
+        meta: {
+          requiresAuth: true,
+          roles: ['Admin'],
+        },
       },
       {
         path: 'funds/get',
