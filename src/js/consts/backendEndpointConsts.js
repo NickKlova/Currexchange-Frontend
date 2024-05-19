@@ -30,6 +30,7 @@ export const backendEndpointConstants = {
   },
   transactionController: {
     createTransaction: backendHost.host + 'api/transaction/create',
+    getTransactions: backendHost.host + 'api/transaction/getall',
   },
   fundController: {
     getFunds: backendHost.host + 'api/fund/getall',

@@ -40,6 +40,10 @@ export const routes = [
         path: 'reservations/get',
         component: () => import('@/pages/reservations/ViewReservations.vue'),
       },
+      {
+        path: 'transactions/get',
+        component: () => import('@/pages/transactions/ViewTransactions.vue'),
+      },
     ],
   },
   {

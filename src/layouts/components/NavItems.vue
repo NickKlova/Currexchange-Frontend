@@ -13,7 +13,7 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
   />
   <VerticalNavGroup
     :item="{
-      title: 'transactions',
+      title: 'Transactions',
       icon: 'ri-p2p-fill',
     }"
   >
@@ -22,6 +22,14 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
         title: 'Create',
         to: '/transaction/create',
         icon: 'ri-add-line',
+      }"
+    />
+
+    <VerticalNavLink
+      :item="{
+        title: 'View',
+        to: '/transactions/get',
+        icon: 'ri-bar-chart-horizontal-fill',
       }"
     />
   </VerticalNavGroup>

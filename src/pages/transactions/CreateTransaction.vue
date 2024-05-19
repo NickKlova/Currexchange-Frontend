@@ -3,6 +3,8 @@ import { computed, reactive, ref, watch } from 'vue'
 import rateService from '@/js/services/rateService'
 import transactionService from '@/js/services/transactionService'
 import currencyService from '@/js/services/currencyService'
+import reservationService from '@/js/services/reservationService'
+import contactService from '@/js/services/contactService'
 import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
 import { useRouter } from 'vue-router'
 
@@ -13,8 +15,6 @@ const acceptedCurrency = ref(null)
 const returnedCurrency = ref(null)
 const amount = ref(null)
 const returnedAmount = ref(null)
-const acceptedCurrencies = ref([])
-const returnedCurrencies = ref([])
 
 const rate = ref({
   sellRate: null,
@@ -24,11 +24,30 @@ const isLoading = ref(false)
 const isRateLoading = ref(false)
 const isAcceptedCurrenciesLoading = ref(false)
 const isReturnedCurrenciesLoading = ref(false)
-const isAmountEnabled = ref(false)
 
-const items = reactive(['General info', 'Addition info', 'Preview'])
+const items = reactive(['General info', 'Additional info', 'Preview'])
 const step = ref(1)
 const isLastItem = computed(() => step.value === items.length)
+
+const contacts = ref([])
+const contact = ref()
+
+const reservations = ref([])
+const reservation = ref()
+
+function setContacts() {
+  return contactService.getContacts()
+    .then(data => {
+      contacts.value = data
+    })
+}
+
+function setReservations() {
+  return reservationService.getReservations()
+    .then(data => {
+      reservations.value = data
+    })
+}
 
 const nextOrSubmit = () => {
   if (isLastItem.value) {
@@ -37,22 +56,90 @@ const nextOrSubmit = () => {
   step.value++
 }
 
-watch([acceptedCurrency, returnedCurrency], () => {
-  if (acceptedCurrency.value !== null && returnedCurrency.value !== null) {
-    setCurrencyPairRate()
-    isAmountEnabled.value = true
+onMounted(() => {
+  setContacts().then(() => {
+    return setReservations()
+  })
+    .then(() => {
+      return setContacts()
+    })
+    .then(() => {
+      setCurrencies()
+    })
+})
+
+function setCurrencies() {
+  currencyService.getCurrencies()
+    .then(data=>{
+      currencies.value = data
+    })
+}
+
+const currencies = ref([])
+const returnedCurrenciesSuggestion = ref([])
+const acceptedCurrenciesSuggestion = ref([])
+
+const acceptedCurrencies = computed(() => {
+  if (returnedCurrency.value !== null) {
+    return [...acceptedCurrenciesSuggestion.value]
+  }
+
+  return [...currencies.value]
+})
+
+const returnedCurrencies = computed(() => {
+  if (acceptedCurrency.value !== null) {
+    return [...returnedCurrenciesSuggestion.value]
+  }
+
+  return [...currencies.value]
+})
+
+watch(acceptedCurrency, async () => {
+  if(acceptedCurrency.value !== null) {
+    await rateService.getCurrenciesForReturnedCurrency(acceptedCurrency.value.id)
+      .then(data => {
+        returnedCurrenciesSuggestion.value = data
+      })
+      .catch(err => {
+        returnedCurrenciesSuggestion.value = []
+      })
+
+    if(returnedCurrency.value !== null) {
+      await setCurrencyPairRate()
+    }
+
+    return
   }
   rate.value.sellRate = null
-  isAmountEnabled.value = false
 })
 
-watch(amount, value => {
-  returnedAmount.value = rate.value.sellRate * amount.value
+watch(returnedCurrency, async () => {
+  if(returnedCurrency.value !== null) {
+    await rateService.getCurrenciesForAcceptedCurrency(returnedCurrency.value.id)
+      .then(data => {
+        acceptedCurrenciesSuggestion.value = data
+      })
+      .catch(err => {
+        acceptedCurrenciesSuggestion.value = []
+      })
+
+    if(acceptedCurrency.value !== null) {
+      await setCurrencyPairRate()
+    }
+
+    return
+  }
+  rate.value.sellRate = null
 })
 
-function setCurrencyPairRate() {
+watch(amount, () => {
+  returnedAmount.value = amount.value * rate.value.sellRate
+})
+
+async function setCurrencyPairRate() {
   isRateLoading.value = true
-  rateService.getRateByCurrencies(acceptedCurrency.value.id, returnedCurrency.value.id)
+  await rateService.getRateByCurrencies(acceptedCurrency.value.id, returnedCurrency.value.id)
     .then(data => {
       rate.value = data
     })
@@ -68,73 +155,9 @@ function setCurrencyPairRate() {
     })
 }
 
-function setAcceptedCurrencies() {
-  isAcceptedCurrenciesLoading.value = true
-  if (returnedCurrency.value == null) {
-    setCurrencies(acceptedCurrencies)
-      .finally(() => {
-        isAcceptedCurrenciesLoading.value = false
-      })
-  }
-  else {
-    rateService.getCurrenciesForAcceptedCurrency(returnedCurrency.value.id)
-      .then(data=>{
-        acceptedCurrencies.value = data
-      })
-      .catch(error => {
-        acceptedCurrencies.value = null
-        let errorObj = {
-          type: 'error',
-          text: 'There are no returned currencies that we can accept for this currency',
-        }
-        snackbar.add(errorObj)
-      })
-      .finally(() => {
-        isAcceptedCurrenciesLoading.value = false
-      })
-  }
-}
-
-function setReturnedCurrencies() {
-  isReturnedCurrenciesLoading.value = true
-  if (acceptedCurrency.value == null) {
-    setCurrencies(returnedCurrencies)
-      .finally(() => {
-        isReturnedCurrenciesLoading.value = false
-      })
-  }
-  else {
-    rateService.getCurrenciesForReturnedCurrency(acceptedCurrency.value.id)
-      .then(data=>{
-        returnedCurrencies.value = data
-      })
-      .catch(error => {
-        returnedCurrencies.value = null
-        let errorObj = {
-          type: 'error',
-          text: 'There are no accepted currencies that we can return for this currency',
-        }
-        snackbar.add(errorObj)
-      })
-      .finally(() => {
-        isReturnedCurrenciesLoading.value = false
-      })
-  }
-}
-
-function setCurrencies(reactiveVariable) {
-  return currencyService.getCurrencies()
-    .then(data => {
-      reactiveVariable.value = data
-    })
-    .catch(error => {
-      let errObj = {
-        type: 'error',
-        text: 'Can\'t get available currencies',
-      }
-      snackbar.add(errObj)
-    })
-}
+const isAmountDisabled = computed(() => {
+  return !(returnedCurrency.value !== null && acceptedCurrency.value !== null)
+})
 
 function createTransaction() {
   isLoading.value = true
@@ -203,7 +226,6 @@ function createTransaction() {
             :loading="isAcceptedCurrenciesLoading"
             return-object
             clearable
-            @click="setAcceptedCurrencies"
           />
         </VCol>
         <VCol class="pa-5">
@@ -215,7 +237,6 @@ function createTransaction() {
             :loading="isReturnedCurrenciesLoading"
             return-object
             clearable
-            @click="setReturnedCurrencies"
           />
         </VCol>
         <VCol class="pa-5">
@@ -224,7 +245,7 @@ function createTransaction() {
             hide-details="auto"
             type="number"
             label="Amount"
-            :disabled="isAmountEnabled"
+            :disabled="isAmountDisabled"
           />
         </VCol>
       </VRow>
@@ -255,15 +276,23 @@ function createTransaction() {
       <VRow>
         <VCol class="pa-5">
           <VAutocomplete
+            v-model="contact"
             label="Contact"
-            :items="['nick', 'evgeniy', 'pavlo']"
+            :items="contacts"
+            item-title="fullName"
+            return-object
+            clearable
           />
         </VCol>
         <VCol class="pa-5">
           <VAutocomplete
+            v-model="reservation"
             label="Reservations"
-            :items="['reservation 1 - date - amount - currency', 'reservation 2', 'reservation 3']"
+            :items="reservations"
+            item-title="id"
+            return-object
             hide-details
+            clearable
             outlined
           />
         </VCol>
