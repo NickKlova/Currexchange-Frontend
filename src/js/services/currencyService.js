@@ -30,19 +30,36 @@ function createCurrency(currency) {
     .then(response => {
       return response.data
     })
+    .catch(error => {
+      console.error('Error when creating currency:', error)
+      throw error
+    })
 }
 
 function updateCurrency(currencyId, currency) {
-  return axios.patch(backendEndpointConstants.currencyController.updateCurrency(currencyId), currency)
+  return axios.put(backendEndpointConstants.currencyController.updateCurrency(currencyId), currency)
     .then(response => {
       return response.data
     })
     .catch(error => {
       console.error('Error when adding currency:', error)
+      throw error
+    })
+}
+
+function getBankGovCurrencies() {
+  return axios.get(backendEndpointConstants.currencyController.getBankGovCurrencies)
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      console.error('Error when getBankGovCurrencies returned', error)
+      throw error
     })
 }
 
 export default {
+  getBankGovCurrencies,
   createCurrency,
   getCurrencies,
   updateCurrency,

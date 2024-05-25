@@ -23,16 +23,17 @@ const authThemeMask = computed(() => {
 const isPasswordVisible = ref(false)
 
 function login() {
-  AuthService.login({
-    username: form.value.email,
-    password: form.value.password,
-  })
-    .then(() => {
-      router.push('/')
-    },
-    error => {
-      console.error(error)
-    })
+  //AuthService.login({
+  //  username: form.value.email,
+ //   password: form.value.password,
+ // })
+ //   .then(() => {
+ //     router.push('/')
+ //   },
+  //  error => {
+  //    console.error(error)
+  //  })
+  router.push('/')
 }
 </script>
 

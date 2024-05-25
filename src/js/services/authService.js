@@ -8,8 +8,13 @@ class AuthService {
     return axios
       .post(`${API_URL}?login=${user.username}&password=${user.password}`)
       .then(response => {
-        if (response.data.accessToken) {
-          localStorage.setItem('user', JSON.stringify(response.data));
+        if (response.data.token) {
+          let obj = {
+            role: response.data.user.role.name,
+            token: response.data.token,
+          }
+          console.log(JSON.stringify(obj))
+          localStorage.setItem('user', JSON.stringify(obj))
         }
 
         return response.data
@@ -21,13 +26,19 @@ class AuthService {
   }
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'))
+    try {
+      let some = JSON.parse(localStorage.getItem('user'))
+      return some
+    }
+    catch (error) {
+      return null
+    }
   }
 
   getRole() {
     const user = this.getCurrentUser()
-    if (user && user.accessToken) {
-      const decodedToken = jwtDecode(user.accessToken)
+    if (user && user.token) {
+      const decodedToken = jwtDecode(user.token)
 
       return user.role
     }

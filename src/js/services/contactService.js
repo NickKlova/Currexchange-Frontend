@@ -12,9 +12,12 @@ function getContacts() {
 }
 
 function updateContact(contactId, data) {
-  return axios.patch(backendEndpointConstants.contactController.updateContact(contactId), data)
+  return axios.put(backendEndpointConstants.contactController.updateContact(contactId), data)
     .then(response => {
       return response.data
+    })
+    .catch(error => {
+      console.error(error)
     })
 }
 

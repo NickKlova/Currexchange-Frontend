@@ -4,20 +4,21 @@ export const backendHost = {
 
 export const backendEndpointConstants = {
   currencyController: {
-    getCurrencies: backendHost.host + 'api/currency/getall',
+    getCurrencies: backendHost.host + 'api/currency/get/all',
+    getBankGovCurrencies: backendHost.host + 'api/currency/gov/get/all',
     createCurrency: backendHost.host + 'api/currency/create',
     updateCurrency: currencyId => {
-      return backendHost.host + `api/currency/update?id=${currencyId}`
+      return backendHost.host + `api/currency/update/${currencyId}`
     },
     deleteCurrency: currencyId => {
-      return backendHost.host + `api/currency/delete?id=${currencyId}`
+      return backendHost.host + `api/currency/delete/${currencyId}`
     },
   },
   rateController: {
-    getRatesByTargetCurrency: backendHost.host + 'api/rate/getallByTargetCurrencyId?targetCurrencyId=',
-    getRatesByBaseCurrency: backendHost.host + 'api/rate/getallByBaseCurrencyId?baseCurrencyId=',
+    getRatesByTargetCurrency: backendHost.host + 'api/rate/getall/bytargetcurrency/',
+    getRatesByBaseCurrency: backendHost.host + 'api/rate/getall/bybasecurrency/',
     getRate: (baseCurrencyId, targetCurrencyId) => {
-      return backendHost.host + `api/rate/get?baseCurrency=${baseCurrencyId}&targetCurrency=${targetCurrencyId}`
+      return backendHost.host + `api/rate/get/bycurrencies?baseCurrency=${baseCurrencyId}&targetCurrency=${targetCurrencyId}`
     },
     createRate: backendHost.host + 'api/rate/create',
     getRates: backendHost.host + 'api/rate/getall',
@@ -35,7 +36,7 @@ export const backendEndpointConstants = {
   fundController: {
     getFunds: backendHost.host + 'api/fund/getall',
     updateFund: fundId => {
-      return backendHost.host + `api/fund/updateById?id=${fundId}`
+      return backendHost.host + `api/fund/update/${fundId}`
     },
   },
   contactController: {
@@ -44,7 +45,7 @@ export const backendEndpointConstants = {
       return backendHost.host + `api/contact/update?id=${contactId}`
     },
     deleteContact: contactId => {
-      return backendHost.host + `api/contact/delete?id=${contactId}`
+      return backendHost.host + `api/contact/deactivate?id=${contactId}`
     },
     createContact: backendHost.host + 'api/contact/create',
   },

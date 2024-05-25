@@ -165,6 +165,7 @@ function createTransaction() {
     rateId: rate.value.id,
     isSale: true,
     amount: amount.value,
+    contactId: contact.value.id,
   }
   transactionService.createTransaction(data)
     .then(info => {

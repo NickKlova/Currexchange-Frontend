@@ -6,7 +6,7 @@ function getFunds() {
 }
 
 function updateFund(fundId, data) {
-  return axios.patch(backendEndpointConstants.fundController.updateFund(fundId), data)
+  return axios.put(backendEndpointConstants.fundController.updateFund(fundId), data)
     .then(response => {
       return response.data
     })

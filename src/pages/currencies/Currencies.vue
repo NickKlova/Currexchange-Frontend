@@ -77,6 +77,7 @@ const pushCreatedCurrencyToList = createdCurrency => {
 
         <VDialog v-model="isShownCurrencyDialog['new']">
           <CurrencyModalWindow
+            :currencies="actualCurrencies"
             @push-created-currency-to-list="pushCreatedCurrencyToList"
             @close-add-currency-dialog="closeCurrencyDialog"
           />
