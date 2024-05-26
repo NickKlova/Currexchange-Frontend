@@ -15,18 +15,19 @@ export const backendEndpointConstants = {
     },
   },
   rateController: {
-    getRatesByTargetCurrency: backendHost.host + 'api/rate/getall/bytargetcurrency/',
-    getRatesByBaseCurrency: backendHost.host + 'api/rate/getall/bybasecurrency/',
-    getRate: (baseCurrencyId, targetCurrencyId) => {
-      return backendHost.host + `api/rate/get/bycurrencies?baseCurrency=${baseCurrencyId}&targetCurrency=${targetCurrencyId}`
+    getRates: backendHost.host + 'api/rate/get/all',
+    getRateByCurrency: currencyId => {
+      return backendHost.host + `api/rate/get/bycurrency/${currencyId}`;
+    },
+    getRate: rateId => {
+      return backendHost.host + `api/rate/get/${rateId}`
     },
     createRate: backendHost.host + 'api/rate/create',
-    getRates: backendHost.host + 'api/rate/getall',
     updateRate: rateId => {
-      return backendHost.host + 'api/rate/update?id=' + rateId
+      return backendHost.host + `api/rate/update/${rateId}`
     },
     deleteRate: rateId => {
-      return backendHost.host + `api/rate/delete?id=${rateId}`
+      return backendHost.host + `api/rate/delete/${rateId}`
     },
   },
   transactionController: {

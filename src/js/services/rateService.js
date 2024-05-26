@@ -39,67 +39,46 @@ function getRateByCurrencies(baseCurrencyId, targetCurrencyId) {
       return response.data
     })
     .catch(err => {
-      cosole.log(err)
+      console.log(err)
     })
 }
 
 function createRate(data) {
   return axios.post(backendEndpointConstants.rateController.createRate, data)
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      console.error('Error when creating rate:', error)
+      throw error
+    })
 }
 
 function getRates() {
   return axios.get(backendEndpointConstants.rateController.getRates)
     .then(response => {
-      return response.data.map(rate => {
-        return {
-          id: rate.id,
-          baseCurrency: {
-            id: rate.baseCurrency.id,
-            code: rate.baseCurrency.code,
-          },
-          targetCurrency: {
-            id: rate.targetCurrency.id,
-            code: rate.targetCurrency.code,
-          },
-          sellRate: rate.sellRate,
-        }
-      })
+      return response.data
+    })
+    .catch(error => {
+      console.error('Error when receiving rates:', error)
+      throw error
     })
 }
 
 function updateRate(rateId, data) {
-  return axios.patch(backendEndpointConstants.rateController.updateRate(rateId), data)
+  return axios.put(backendEndpointConstants.rateController.updateRate(rateId), data)
     .then(response => {
-      return  {
-        id: response.data.id,
-        baseCurrency: {
-          id: response.data.baseCurrency.id,
-          code: response.data.baseCurrency.code,
-        },
-        targetCurrency: {
-          id: response.data.targetCurrency.id,
-          code: response.data.targetCurrency.code,
-        },
-        sellRate: response.data.sellRate,
-      }
+      return  response.data
     })
 }
 
 function deleteRate(rateId) {
   return axios.delete(backendEndpointConstants.rateController.deleteRate(rateId))
     .then(response => {
-      return  {
-        id: response.data.id,
-        baseCurrency: {
-          id: response.data.baseCurrency.id,
-          code: response.data.baseCurrency.code,
-        },
-        targetCurrency: {
-          id: response.data.targetCurrency.id,
-          code: response.data.targetCurrency.code,
-        },
-        sellRate: response.data.sellRate,
-      }
+      return  response.data
+    })
+    .catch(error => {
+      console.error('Error when deleting rate:', error)
     })
 }
 

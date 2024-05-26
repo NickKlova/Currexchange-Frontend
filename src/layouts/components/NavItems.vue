@@ -41,29 +41,14 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       icon: 'ri-money-dollar-circle-fill',
     }"
   />
-  
-  <VerticalNavGroup
-    :item="{
-      title: 'Rates',
-      icon: 'ri-swap-2-line',
-    }"
-  >
-    <VerticalNavLink
-      :item="{
-        title: 'Create',
-        to: '/rate/create',
-        icon: 'ri-add-line',
-      }"
-    />
 
-    <VerticalNavLink
-      :item="{
-        title: 'View',
+  <VerticalNavLink
+    :item="{
+        title: 'Rates',
         to: '/rates/get',
-        icon: 'ri-bar-chart-horizontal-fill',
+        icon: 'ri-swap-2-line',
       }"
-    />
-  </VerticalNavGroup>
+  />
 
   <VerticalNavLink
     :item="{
