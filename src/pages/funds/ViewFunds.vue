@@ -10,8 +10,8 @@ onMounted(() => {
 })
 
 function setFunds() {
-  fundService.getFunds().then(response=> {
-    funds.value = response.data
+  fundService.getFunds().then(data=> {
+    funds.value = data
   })
 }
 
@@ -45,6 +45,11 @@ const updateFundInList = updatedFund => {
           </VCol>
           <VCol>
             <VListItemTitle class="font-weight-bold">
+              Description
+            </VListItemTitle>
+          </VCol>
+          <VCol>
+            <VListItemTitle class="font-weight-bold">
               Fund
             </VListItemTitle>
           </VCol>
@@ -70,13 +75,16 @@ const updateFundInList = updatedFund => {
             </VListItemTitle>
           </VCol>
           <VCol>
+            {{ fund.currency.description }}
+          </VCol>
+          <VCol>
             <VListItemTitle>
               {{ fund.amount }}
             </VListItemTitle>
           </VCol>
           <VCol
             cols="1"
-            class="d-flex justify-end"
+            class="d-flex justify-center"
           >
             <!-- Update currency button -->
             <VBtn

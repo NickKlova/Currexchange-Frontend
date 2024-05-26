@@ -35,7 +35,7 @@ export const backendEndpointConstants = {
     getTransactions: backendHost.host + 'api/transaction/getall',
   },
   fundController: {
-    getFunds: backendHost.host + 'api/fund/getall',
+    getFunds: backendHost.host + 'api/fund/get/all',
     updateFund: fundId => {
       return backendHost.host + `api/fund/update/${fundId}`
     },

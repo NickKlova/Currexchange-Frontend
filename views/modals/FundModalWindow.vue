@@ -79,10 +79,19 @@ function closeDialogWindow() {
         <VCol>
           <VAutocomplete
             v-model="currency"
-            label="Accepted currency"
+            label="Code"
             return-object
             disabled
             item-title="code"
+          />
+        </VCol>
+        <VCol>
+          <VAutocomplete
+            v-model="currency"
+            label="Description"
+            return-object
+            disabled
+            item-title="description"
           />
         </VCol>
         <VCol>
