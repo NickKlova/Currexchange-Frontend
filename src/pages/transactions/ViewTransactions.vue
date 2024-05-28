@@ -61,7 +61,23 @@ function setTransactions() {
         </VRow>
       </VListItem>
 
+      <VListItem v-if="transactions.length === 0">
+        <VRow>
+          <VCol
+            cols="12"
+            class="d-flex justify-center pa-5"
+          >
+            <VIcon
+              icon="ri-database-2-fill"
+              class="mr-3"
+            />
+            No data
+          </VCol>
+        </VRow>
+      </VListItem>
+
       <VListItem
+        v-if="transactions.length > 0"
         v-for="transaction in transactions"
         :key="transaction.id"
       >

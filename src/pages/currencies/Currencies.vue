@@ -141,7 +141,7 @@ const pushCreatedCurrencyToList = createdCurrency => {
           </VCol>
           <VCol
             cols="1"
-            class="d-flex justify-end"
+            class="d-flex justify-center"
           >
             <!-- Update currency button -->
             <VBtn
