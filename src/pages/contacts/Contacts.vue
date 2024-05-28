@@ -2,9 +2,12 @@
 import contactService from '@/js/services/contactService'
 import ContactModalWindow from '../../../views/modals/ContactModalWindow.vue'
 import { ref } from 'vue'
+import { useSnackbar, Vue3Snackbar } from 'vue3-snackbar'
 
+const snackbar = useSnackbar()
 const contacts = ref([])
 const isShownContactDialog = ref({})
+const isLoading = ref(false)
 
 onMounted(() => {
   setContacts()
@@ -20,6 +23,10 @@ function setContacts() {
 
 function pushCreatedContactToList(createdContact) {
   contacts.value.push(createdContact)
+  snackbar.add({
+    type: 'success',
+    text: 'Contact created successfully!',
+  })
   let closeObject = {
     id: "new",
     state: true,
@@ -41,17 +48,33 @@ function updateContactInList(updatedContact) {
       state: true,
     }
     closeContactDialog(closeObject)
+    snackbar.add({
+      type: 'success',
+      text: 'Contact updated successfully!',
+    })
   }
 }
 
-function deleteContact(id) {
-  contactService.deleteContact(id)
-    .then(deletedContact => {
-      let cont = contacts.value.findIndex(item => item.id === deletedContact.id)
-      if (cont !== -1) {
-        contacts.value.splice(cont, 1)
-      }
+async function deleteContact(id) {
+  try {
+    isLoading.value = true
+    let data = await contactService.deleteContact(id)
+    let contactIndex = contacts.value.findIndex(item => item.id === data.id)
+    if (contactIndex !== -1) {
+      contacts.value.splice(contactIndex, 1)
+      snackbar.add({
+        type: 'success',
+        text: 'Contact deleted successfully!',
+      })
+    }
+  } catch (error) {
+    snackbar.add({
+      type: 'error',
+      text: error.message,
     })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -59,10 +82,10 @@ function deleteContact(id) {
   <VCard>
     <!-- Header -->
     <VCardTitle>
-      <div class="d-flex justify-end pa-5">
-        <h1 class="mr-auto">
+      <div class="d-flex pa-2 align-center justify-space-between w-100">
+        <div class="text-center flex-grow-1">
           Contact panel
-        </h1>
+        </div>
         <VBtn @click="isShownContactDialog['new']=true">
           <VIcon icon="ri-add-line" />
           <span>Add contact</span>
@@ -115,7 +138,23 @@ function deleteContact(id) {
       <!-- -->
 
       <!-- List content -->
+      <VListItem v-if="contacts.length === 0">
+        <VRow>
+          <VCol
+            cols="12"
+            class="d-flex justify-center pa-15"
+          >
+            <VIcon
+              icon="ri-database-2-fill"
+              class="mr-3"
+            />
+            No data
+          </VCol>
+        </VRow>
+      </VListItem>
+
       <VListItem
+        v-if="contacts.length > 0"
         v-for="contact in contacts"
         :key="contact.id"
       >
@@ -137,12 +176,14 @@ function deleteContact(id) {
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ contact.isBlacklist ? "yes" : "no" }}
+              <VChip :color="contact.isBlacklist ? 'error' : 'success'">
+                {{ contact.isBlacklist ? "yes" : "no" }}
+              </VChip>
             </VListItemTitle>
           </VCol>
           <VCol
             cols="1"
-            class="d-flex justify-end"
+            class="d-flex justify-center"
           >
             <!-- Update currency button -->
             <VBtn
@@ -178,4 +219,24 @@ function deleteContact(id) {
     </VList>
   <!-- -->
   </VCard>
+
+  <VDialog
+    v-model="isLoading"
+    :persistent="isLoading"
+  >
+    <VProgressCircular
+      v-if="isLoading"
+      color="primary"
+      :size="100"
+      :width="10"
+      indeterminate
+      class="ma-auto"
+    />
+  </VDialog>
+
+  <Vue3Snackbar
+    bottom
+    right
+    duration="2000"
+  />
 </template>

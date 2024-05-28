@@ -196,7 +196,7 @@ async function createReservation() {
     isLoading.value = false
     if(reservationCreatedSuccessfully) {
       await delay(1000)
-      await router.push('/transactions/get')
+      await router.push('/reservations/get')
     }
   }
 }
