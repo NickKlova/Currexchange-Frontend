@@ -53,12 +53,9 @@ function setTransactions() {
               Reservation
             </VListItemTitle>
           </VCol>
-          <VCol
-            cols="1"
-            class="d-flex justify-center"
-          >
+          <VCol>
             <VListItemTitle class="font-weight-bold">
-              Actions
+              Date
             </VListItemTitle>
           </VCol>
         </VRow>
@@ -91,7 +88,7 @@ function setTransactions() {
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ transaction.amount }}
+              {{ transaction.amount + transaction.rateLog.currency.symbol }}
             </VListItemTitle>
           </VCol>
           <VCol>
@@ -99,11 +96,10 @@ function setTransactions() {
               {{ transaction.reservation == null ? "none" : transaction.reservation.id }}
             </VListItemTitle>
           </VCol>
-          <VCol
-            cols="1"
-            class="d-flex justify-end"
-          >
-
+          <VCol>
+            <VListItemTitle>
+              {{ new Date(transaction.createdOn).toLocaleDateString() + " " + new Date(transaction.createdOn).toLocaleTimeString() }}
+            </VListItemTitle>
           </VCol>
         </VRow>
       </VListItem>
