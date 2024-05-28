@@ -65,7 +65,7 @@ function setTransactions() {
         <VRow>
           <VCol
             cols="12"
-            class="d-flex justify-center pa-5"
+            class="d-flex justify-center pa-15"
           >
             <VIcon
               icon="ri-database-2-fill"

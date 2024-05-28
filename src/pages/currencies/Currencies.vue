@@ -154,7 +154,23 @@ async function deleteCurrency(id) {
       <!-- -->
 
       <!-- List content -->
+      <VListItem v-if="actualCurrencies.length === 0">
+        <VRow>
+          <VCol
+            cols="12"
+            class="d-flex justify-center pa-15"
+          >
+            <VIcon
+              icon="ri-database-2-fill"
+              class="mr-3"
+            />
+            No data
+          </VCol>
+        </VRow>
+      </VListItem>
+
       <VListItem
+        v-if="actualCurrencies.length > 0"
         v-for="currency in actualCurrencies"
         :key="currency.id"
       >
