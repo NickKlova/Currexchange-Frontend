@@ -2,31 +2,16 @@
 import { ref, onMounted } from 'vue'
 import CurrencyModalWindow from '../../../views/modals/CurrencyModalWindow.vue'
 import currencyService from '@/js/services/currencyService'
+import { useSnackbar, Vue3Snackbar } from 'vue3-snackbar'
+
+const snackbar = useSnackbar()
 
 const actualCurrencies = ref([])
+const isLoading = ref(false)
+
+//region dialog
+
 const isShownCurrencyDialog = ref({})
-
-onMounted(() => {
-  setActualCurrencies()
-  isShownCurrencyDialog.value["new"] = false
-})
-
-function setActualCurrencies() {
-  currencyService.getCurrencies()
-    .then(data => {
-      actualCurrencies.value = data
-    })
-}
-
-function deleteCurrency(id) {
-  currencyService.deleteCurrency(id)
-    .then(deletedCurrency => {
-      let currency = actualCurrencies.value.findIndex(item => item.id === deletedCurrency.id)
-      if (currency !== -1) {
-        actualCurrencies.value.splice(currency, 1)
-      }
-    })
-}
 
 const closeCurrencyDialog = value => {
   isShownCurrencyDialog.value[value.id] = !value.state
@@ -35,13 +20,20 @@ const closeCurrencyDialog = value => {
 const updateCurrencyInList = updatedCurrency => {
   let index = actualCurrencies.value.findIndex(currency => currency.id === updatedCurrency.id)
   if(index !== -1) {
-    actualCurrencies.value[index].code = updatedCurrency.code
+    let foundCurrency = actualCurrencies.value[index]
+    foundCurrency.code = updatedCurrency.code
+    foundCurrency.description = updatedCurrency.description
+    foundCurrency.symbol = updatedCurrency.symbol
 
     let closeObject = {
       id: updatedCurrency.id,
       state: true,
     }
     closeCurrencyDialog(closeObject)
+    snackbar.add({
+      type: 'success',
+      text: 'Currency updated successfully!',
+    })
   }
 }
 
@@ -59,6 +51,49 @@ const pushCreatedCurrencyToList = createdCurrency => {
     state: true,
   }
   closeCurrencyDialog(closeObject)
+  snackbar.add({
+    type: 'success',
+    text: 'Currency created successfully!',
+  })
+}
+
+//endregion
+
+onMounted(async () => {
+  await setActualCurrencies()
+  isShownCurrencyDialog.value["new"] = false
+})
+
+//region value setters
+
+async function setActualCurrencies() {
+  actualCurrencies.value = await currencyService.getCurrencies()
+}
+
+//endregion
+
+async function deleteCurrency(id) {
+  try {
+    //snackbar.clear()
+    isLoading.value = true
+    let deletedCurrency = await currencyService.deleteCurrency(id)
+    let deletedCurrencyIndex = actualCurrencies.value.findIndex(item => item.id === deletedCurrency.id)
+    if (deletedCurrencyIndex !== -1) {
+      actualCurrencies.value.splice(deletedCurrencyIndex, 1)
+    }
+    snackbar.add({
+      type: 'success',
+      text: 'Currency deleted successfully!',
+    })
+  } catch (error) {
+    snackbar.add({
+      type: 'error',
+      text: error.message,
+    })
+  } finally {
+    isLoading.value = false
+  }
+
 }
 </script>
 
@@ -66,11 +101,11 @@ const pushCreatedCurrencyToList = createdCurrency => {
   <VCard>
     <!-- Header -->
     <VCardTitle>
-      <div class="d-flex justify-end pa-5">
-        <h1 class="mr-auto">
+      <div class="d-flex pa-2 align-center justify-space-between w-100">
+        <div class="text-center flex-grow-1">
           Currency panel
-        </h1>
-        <VBtn @click="isShownCurrencyDialog['new']=true">
+        </div>
+        <VBtn @click="isShownCurrencyDialog['new'] = true" class="ml-auto">
           <VIcon icon="ri-add-line" />
           <span>Add currency</span>
         </VBtn>
@@ -177,4 +212,24 @@ const pushCreatedCurrencyToList = createdCurrency => {
     </VList>
     <!-- -->
   </VCard>
+
+  <VDialog
+    v-model="isLoading"
+    :persistent="isLoading"
+  >
+    <VProgressCircular
+      v-if="isLoading"
+      color="primary"
+      :size="100"
+      :width="10"
+      indeterminate
+      class="ma-auto"
+    />
+  </VDialog>
+
+  <Vue3Snackbar
+    bottom
+    right
+    duration="2000"
+  />
 </template>
