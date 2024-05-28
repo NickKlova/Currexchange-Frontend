@@ -33,8 +33,8 @@ function getCurrenciesForReturnedCurrency(currencyId) {
     })
 }
 
-function getRateByCurrencies(baseCurrencyId, targetCurrencyId) {
-  return axios.get(backendEndpointConstants.rateController.getRate(baseCurrencyId, targetCurrencyId))
+function getRateByCurrency(currencyId) {
+  return axios.get(backendEndpointConstants.rateController.getRateByCurrency(currencyId))
     .then(response => {
       return response.data
     })
@@ -87,7 +87,7 @@ export default {
   updateRate,
   getRates,
   createRate,
-  getRateByCurrencies,
+  getRateByCurrency,
   getCurrenciesForAcceptedCurrency,
   getCurrenciesForReturnedCurrency,
 }

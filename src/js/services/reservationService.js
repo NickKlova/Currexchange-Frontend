@@ -19,7 +19,23 @@ function deleteReservation(id) {
     })
 }
 
+function updateReservation(id, data) {
+  return axios.patch(backendEndpointConstants.reservationController.updateReservation(id), data)
+    .then(response => {
+      return response.data
+    })
+}
+
+function getReservationsByContact(id) {
+  return axios.get(backendEndpointConstants.reservationController.getReservationsByContact(id))
+    .then(response => {
+      return response.data
+    })
+}
+
 export default {
+  getReservationsByContact,
+  updateReservation,
   getReservations,
   deleteReservation,
   createReservation,

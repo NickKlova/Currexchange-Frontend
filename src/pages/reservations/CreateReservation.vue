@@ -7,196 +7,106 @@ import { Vue3Snackbar, useSnackbar } from "vue3-snackbar"
 import { useRouter } from 'vue-router'
 import reservationService from '@/js/services/reservationService'
 import isVarEmpty from '@/js/helper'
+import { operationTypes } from '@/js/consts/operationTypesConsts'
+import { reservationStatuses } from '@/js/consts/reservationStatusesConsts'
 
 const router = useRouter()
 const snackbar = useSnackbar()
 
 const contacts = ref([])
+const currencies = ref([])
+
 const contact = ref(null)
-
-const acceptedCurrency = ref(null)
-
-const returnedCurrency = ref(null)
-
+const reservationStatus = ref(null)
+const currency = ref(null)
 const amount = ref(null)
 const returnedAmount = ref(null)
+const rate = ref(null)
+const operationType = ref(null)
 
-const rate = ref({
-  sellRate: null,
+const rateTextValue = computed(() => {
+  if (operationType.value !== null && rate.value !== null) {
+    if (operationType.value.id === "e3b0c442-98fc-1c14-9afd-2fb77c6076f6") {
+      return rate.value.buyRate
+    }
+    return rate.value.sellRate
+  }
+  return ""
 })
 
-const isLoading = ref(false)
-const isRateLoading = ref(false)
-const isAcceptedCurrenciesLoading = ref(false)
-const isReturnedCurrenciesLoading = ref(false)
-const currencies = ref([])
-const returnedCurrenciesSuggestion = ref([])
-const acceptedCurrenciesSuggestion = ref([])
+const isAmountDisabled = computed(() => {
+  return currency.value === null || operationType.value === null
+})
 
 const items = reactive(['General info', 'Preview'])
 const step = ref(1)
 const isLastItem = computed(() => step.value === items.length)
 
-const nextOrSubmit = () => {
+const nextOrSubmit = async () => {
   if (isLastItem.value) {
-    return createReservation()
+    return await createReservation()
   }
   step.value++
 }
 
-onMounted(() => {
-  setContacts()
-    .then(() => {
-      setCurrencies()
-    })
+onMounted(async () => {
+  await setContacts()
+  await setCurrencies()
 })
 
-function setContacts() {
-  return contactService.getContacts()
+watch(amount, (newValue) => {
+  returnedAmount.value = Math.round((newValue * rateTextValue.value) * 100) / 100
+})
+
+watch(currency, async (newValue) => {
+  if (newValue !== null) {
+    return await getRate(newValue.id)
+  }
+  rate.value = null
+  rateTextValue.value = null
+})
+
+async function setContacts() {
+  await contactService.getContacts()
     .then(data => {
       contacts.value = data
     })
 }
 
-function setCurrencies() {
-  currencyService.getCurrencies()
-    .then(data=>{
+async function setCurrencies() {
+  await currencyService.getCurrencies()
+    .then(data => {
       currencies.value = data
     })
 }
 
-const acceptedCurrencies = computed(() => {
-  if (returnedCurrency.value !== null) {
-    return [...acceptedCurrenciesSuggestion.value]
-  }
-
-  return [...currencies.value]
-})
-
-const returnedCurrencies = computed(() => {
-  if (acceptedCurrency.value !== null) {
-    return [...returnedCurrenciesSuggestion.value]
-  }
-
-  return [...currencies.value]
-})
-
-watch(acceptedCurrency, async () => {
-  if(acceptedCurrency.value !== null) {
-    await rateService.getCurrenciesForReturnedCurrency(acceptedCurrency.value.id)
-      .then(data => {
-        returnedCurrenciesSuggestion.value = data
-      })
-      .catch(err => {
-        returnedCurrenciesSuggestion.value = []
-      })
-
-    if(returnedCurrency.value !== null) {
-      await setCurrencyPairRate()
-    }
-
-    return
-  }
-  rate.value.sellRate = null
-})
-
-watch(returnedCurrency, async () => {
-  if(returnedCurrency.value !== null) {
-    await rateService.getCurrenciesForAcceptedCurrency(returnedCurrency.value.id)
-      .then(data => {
-        acceptedCurrenciesSuggestion.value = data
-      })
-      .catch(err => {
-        acceptedCurrenciesSuggestion.value = []
-      })
-
-    if(acceptedCurrency.value !== null) {
-      await setCurrencyPairRate()
-    }
-
-    return
-  }
-  rate.value.sellRate = null
-})
-
-watch(amount, () => {
-  returnedAmount.value = amount.value * rate.value.sellRate
-})
-
-async function setCurrencyPairRate() {
-  isRateLoading.value = true
-  await rateService.getRateByCurrencies(acceptedCurrency.value.id, returnedCurrency.value.id)
+async function getRate(currencyId) {
+  await rateService.getRateByCurrency(currencyId)
     .then(data => {
       rate.value = data
     })
-    .catch(error => {
-      let errObj = {
-        type: 'error',
-        text: 'It is impossible to get the rate for such a pair of currencies',
-      }
-      snackbar.add(errObj)
-    })
-    .finally(() => {
-      isRateLoading.value = false
-    })
 }
 
-const isAmountDisabled = computed(() => {
-  return !(returnedCurrency.value !== null && acceptedCurrency.value !== null)
-})
-
-function isAllRequiredFieldsFill() {
-  return !(isVarEmpty(contact.value) || isVarEmpty(rate.value) || isVarEmpty(amount.value))
-}
-
-function createReservation() {
-  if(!isAllRequiredFieldsFill()) {
-    let errorObj = {
-      type: 'error',
-      text: 'Fill all fields!',
-    }
-    snackbar.add(errorObj)
-
-    return
-  }
-
-  isLoading.value = true
+async function createReservation() {
   let data = {
     contactId: contact.value.id,
     rateId: rate.value.id,
+    operationId: operationType.value.id,
+    statusId: reservationStatus.value.id,
     amount: amount.value,
-    isSell: true,
   }
-  reservationService.createReservation(data)
-    .then(info => {
-      let successObj = {
-        type: 'success',
-        text: 'Transaction successfully created',
-      }
-      snackbar.add(successObj)
-      setTimeout(() => {
-        router.push('/base')
-      }, 2000)
+
+  await reservationService.createReservation(data)
+    .then(response => {
+      console.log(response)
     })
-    .catch(err=>{
-      let errorObj = {
-        type: 'error',
-        text: 'Can\'t create reservation',
-      }
-      snackbar.add(errorObj)
-    })
-    .finally(() => {
-      isLoading.value = false
+    .catch(error => {
+      console.log(error)
     })
 }
 </script>
 
 <template>
-  <Vue3Snackbar
-    bottom
-    right
-    :duration="2000"
-  />
   <VStepper
     v-model="step"
     :items="items"
@@ -222,27 +132,35 @@ function createReservation() {
         <VRow>
           <VCol class="pa-5">
             <VAutocomplete
-              v-model="acceptedCurrency"
-              label="Accepted currency"
-              :items="acceptedCurrencies"
+              v-model="currency"
+              label="Currency"
+              :items="currencies"
               item-title="code"
-              :loading="isAcceptedCurrenciesLoading"
               return-object
               clearable
             />
           </VCol>
           <VCol class="pa-5">
-            <VAutocomplete
-              v-model="returnedCurrency"
-              label="Returned currency"
-              :items="returnedCurrencies"
-              item-title="code"
-              :loading="isReturnedCurrenciesLoading"
+            <VSelect
+              v-model="operationType"
+              label="Operation Type"
+              :items="operationTypes"
+              item-title="name"
               return-object
-              clearable
             />
           </VCol>
           <VCol class="pa-5">
+            <VSelect
+              v-model="reservationStatus"
+              label="Reservation status"
+              :items="reservationStatuses"
+              item-title="name"
+              return-object
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
             <VTextField
               v-model="amount"
               hide-details="auto"
@@ -251,15 +169,12 @@ function createReservation() {
               :disabled="isAmountDisabled"
             />
           </VCol>
-        </VRow>
-        <VRow>
           <VCol class="pa-5">
             <VTextField
-              v-model="rate.sellRate"
+              v-model="rateTextValue"
               hide-details="auto"
               type="number"
               label="Rate"
-              :loading="isRateLoading"
               disabled
             />
           </VCol>
@@ -278,7 +193,7 @@ function createReservation() {
 
     <VStepperWindow v-if="step === 2">
       <VStepperHeader class="text-h3">
-        Preview
+        Confirmation
       </VStepperHeader>
 
       <VStepperWindow>
@@ -289,6 +204,8 @@ function createReservation() {
               label="Contact"
               :items="contacts"
               item-title="fullName"
+              clearable
+              return-object
               disabled
             />
           </VCol>
@@ -296,23 +213,38 @@ function createReservation() {
         <VRow>
           <VCol class="pa-5">
             <VAutocomplete
-              v-model="acceptedCurrency"
-              label="Accepted currency"
-              :items="acceptedCurrencies"
+              v-model="currency"
+              label="Currency"
+              :items="currencies"
               item-title="code"
+              return-object
+              clearable
               disabled
             />
           </VCol>
           <VCol class="pa-5">
-            <VAutocomplete
-              v-model="returnedCurrency"
-              label="Returned currency"
-              :items="returnedCurrencies"
-              item-title="code"
+            <VSelect
+              v-model="operationType"
+              label="Operation Type"
+              :items="operationTypes"
+              item-title="name"
+              return-object
               disabled
             />
           </VCol>
           <VCol class="pa-5">
+            <VSelect
+              v-model="reservationStatus"
+              label="Reservation status"
+              :items="reservationStatuses"
+              item-title="name"
+              return-object
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
             <VTextField
               v-model="amount"
               hide-details="auto"
@@ -321,11 +253,9 @@ function createReservation() {
               disabled
             />
           </VCol>
-        </VRow>
-        <VRow>
           <VCol class="pa-5">
             <VTextField
-              v-model="rate"
+              v-model="rateTextValue"
               hide-details="auto"
               type="number"
               label="Rate"
@@ -355,4 +285,10 @@ function createReservation() {
       </VBtn>
     </template>
   </VStepper>
+
+  <Vue3Snackbar
+    bottom
+    right
+    :duration="500"
+  />
 </template>

@@ -17,25 +17,30 @@ function setTransactions() {
 
 <template>
   <VCard>
-    <VCardTitle>
-      <h1 class="pa-5">Transaction panel</h1>
+    <VCardTitle class="d-flex justify-center pa-5">
+      Transaction panel
     </VCardTitle>
     <VList>
       <VListItem class="bg-var-theme-background">
         <VRow>
           <VCol>
             <VListItemTitle class="font-weight-bold">
-              Accepted currency
+              Currency
             </VListItemTitle>
           </VCol>
           <VCol>
             <VListItemTitle class="font-weight-bold">
-              Returned currency
+              Operation
             </VListItemTitle>
           </VCol>
           <VCol>
             <VListItemTitle class="font-weight-bold">
-              Rate
+              Buy rate
+            </VListItemTitle>
+          </VCol>
+          <VCol>
+            <VListItemTitle class="font-weight-bold">
+              Sell rate
             </VListItemTitle>
           </VCol>
           <VCol>
@@ -45,7 +50,7 @@ function setTransactions() {
           </VCol>
           <VCol>
             <VListItemTitle class="font-weight-bold">
-              Contact
+              Reservation
             </VListItemTitle>
           </VCol>
           <VCol
@@ -66,17 +71,22 @@ function setTransactions() {
         <VRow>
           <VCol>
             <VListItemTitle>
-              {{ transaction.rate.baseCurrency.code }}
+              {{ transaction.rateLog.currency.code }}
             </VListItemTitle>
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ transaction.rate.targetCurrency.code }}
+              {{ transaction.operationType.name }}
             </VListItemTitle>
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ transaction.rate.sellRate }}
+              {{ transaction.rateLog.buyRate }}
+            </VListItemTitle>
+          </VCol>
+          <VCol>
+            <VListItemTitle>
+              {{ transaction.rateLog.sellRate }}
             </VListItemTitle>
           </VCol>
           <VCol>
@@ -86,7 +96,7 @@ function setTransactions() {
           </VCol>
           <VCol>
             <VListItemTitle>
-              {{ transaction.contact.fullName }}
+              {{ transaction.reservation == null ? "none" : transaction.reservation.id }}
             </VListItemTitle>
           </VCol>
           <VCol
