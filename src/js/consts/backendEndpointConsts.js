@@ -63,4 +63,7 @@ export const backendEndpointConstants = {
       return backendHost.host + 'api/reservation/update?id=' + reservationId
     }
   },
+  userController: {
+    getAllUsers: backendHost.host + 'api/user/get/all'
+  }
 }

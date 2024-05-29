@@ -48,6 +48,10 @@ export const routes = [
         path: 'transactions/get',
         component: () => import('@/pages/transactions/ViewTransactions.vue'),
       },
+      {
+        path: 'users/get',
+        component: () => import('@/pages/users/Users.vue')
+      },
     ],
   },
   {

@@ -87,4 +87,12 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
       icon: 'ri-account-box-fill',
     }"
   />
+
+  <VerticalNavLink
+    :item="{
+      title: 'Users',
+      to: '/users/get',
+      icon: 'ri-user-star-fill',
+    }"
+  />
 </template>
