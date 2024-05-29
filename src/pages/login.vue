@@ -20,6 +20,10 @@ const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark
 })
 
+onMounted(() => {
+  console.log("LOGIN PAGE")
+})
+
 const isPasswordVisible = ref(false)
 
 function login() {
@@ -45,7 +49,7 @@ function login() {
       class="auth-card pa-4 pt-7"
       max-width="448"
     >
-      <VCardItem class="justify-center">
+      <VCardItem class="justify-start">
         <template #prepend>
           <div class="d-flex">
             <div v-html="logo" />
@@ -53,13 +57,13 @@ function login() {
         </template>
 
         <VCardTitle class="font-weight-semibold text-2xl text-uppercase">
-          Materio
+          Currexchange
         </VCardTitle>
       </VCardItem>
 
       <VCardText class="pt-2">
         <h5 class="text-h5 font-weight-semibold mb-1">
-          Welcome to Materio! 👋🏻
+          Welcome to Currexchange! 👋🏻
         </h5>
         <p class="mb-0">
           Please sign-in to your account and start the adventure
@@ -88,22 +92,9 @@ function login() {
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
+            </VCol>
 
-              <!-- remember me checkbox -->
-              <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
-                <VCheckbox
-                  v-model="form.remember"
-                  label="Remember me"
-                />
-
-                <a
-                  class="ms-2 mb-1"
-                  href="javascript:void(0)"
-                >
-                  Forgot Password?
-                </a>
-              </div>
-
+            <VCol cols="12">
               <!-- login button -->
               <VBtn
                 block
@@ -112,59 +103,17 @@ function login() {
                 Login
               </VBtn>
             </VCol>
-
-            <!-- create account -->
-            <VCol
-              cols="12"
-              class="text-center text-base"
-            >
-              <span>New on our platform?</span>
-              <RouterLink
-                class="text-primary ms-2"
-                to="/register"
-              >
-                Create an account
-              </RouterLink>
-            </VCol>
-
-            <VCol
-              cols="12"
-              class="d-flex align-center"
-            >
-              <VDivider />
-              <span class="mx-4">or</span>
-              <VDivider />
-            </VCol>
-
             <!-- auth providers -->
-            <VCol
+<!--            <VCol
               cols="12"
               class="text-center"
             >
-              <AuthProvider />
-            </VCol>
+              &lt;!&ndash; <AuthProvider /> &ndash;&gt;
+            </VCol>-->
           </VRow>
         </VForm>
       </VCardText>
     </VCard>
-
-    <VImg
-      class="auth-footer-start-tree d-none d-md-block"
-      :src="authV1Tree"
-      :width="250"
-    />
-
-    <VImg
-      :src="authV1Tree2"
-      class="auth-footer-end-tree d-none d-md-block"
-      :width="350"
-    />
-
-    <!-- bg img -->
-    <VImg
-      class="auth-footer-mask d-none d-md-block"
-      :src="authThemeMask"
-    />
   </div>
 </template>
 

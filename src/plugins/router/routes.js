@@ -55,7 +55,7 @@ export const routes = [
     ],
   },
   {
-    path: '/',
+    path: '/auth',
     component: () => import('@/layouts/blank.vue'),
     children: [
       {

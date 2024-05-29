@@ -1,6 +1,7 @@
 <template>
   <div class="layout-wrapper layout-blank">
     <RouterView />
+    {{ console.log("BLANK FILE") }}
   </div>
 </template>
 

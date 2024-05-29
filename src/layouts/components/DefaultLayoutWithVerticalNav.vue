@@ -39,7 +39,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         />
 
         <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
-          Materio
+          Currexchange
         </h1>
       </RouterLink>
 
