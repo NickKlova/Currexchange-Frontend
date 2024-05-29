@@ -5,6 +5,13 @@ import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 </script>
 
 <template>
+  <VerticalNavLink
+    :item="{
+        title: 'Dashboards',
+        to: '/dashboard',
+        icon: 'ri-dashboard-fill',
+      }"
+  />
   <!-- Operations -->
   <VerticalNavSectionTitle
     :item="{

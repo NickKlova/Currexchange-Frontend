@@ -1,3 +1,7 @@
+<script setup>
+
+</script>
+
 <template>
   <VCard>
     <VCardTitle>Base page</VCardTitle>
